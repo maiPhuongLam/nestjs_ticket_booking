@@ -2,8 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@n
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+
 import { CurrentUser, CurrentUserId } from 'src/common/decorators';
 
 @Controller('auth')
@@ -24,9 +23,8 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request) {
-    const user = req.user
-    return this.authSerice.logout(user['sub']);
+  async logout(@CurrentUserId() userId: number) {
+    return this.authSerice.logout(userId);
   }
 
   @Post('refresh')

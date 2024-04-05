@@ -6,9 +6,11 @@ import { RegisterDto } from './dto/register.dto';
 import { Token } from './interfaces/token.interface';
 import { hash, validate } from 'src/common/utils';
 import { LoginDto } from './dto';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
   ) {}
@@ -19,7 +21,7 @@ export class AuthService {
       if (!userExist) {
         reigsterDto.password = await hash(reigsterDto.password)
         const user = await this.userService.createUser(reigsterDto);
-        const token = await this.getToken(user.id, user.email)
+        const token = await this.generateToken(user.id, user.email)
         await this.updateRefreshTokenHash(user.id, token.refresh_token)
         return token
       } else {
@@ -35,8 +37,8 @@ export class AuthService {
       
       if (user) {
         const matchPassword = await validate(loginDto.password, user.password)
-        if (!matchPassword) {
-          const token = await this.getToken(user.id, user.email)
+        if (matchPassword) {
+          const token = await this.generateToken(user.id, user.email)
           await this.updateRefreshTokenHash(user.id, token.refresh_token)
           return token
         }
@@ -67,7 +69,7 @@ export class AuthService {
       const matchRefreshToken = validate(refreshToken, user.rt)
 
       if (matchRefreshToken) {
-        const token = await this.getToken(user.id, user.email);
+        const token = await this.generateToken(user.id, user.email);
         await this.updateRefreshTokenHash(user.id, token.refresh_token);
         return token;
       } else {
@@ -79,14 +81,14 @@ export class AuthService {
     }
   } 
 
-  async getToken(userId: number, email: string): Promise<Token> {
+  async generateToken(userId: number, email: string): Promise<Token> {
     const accessToken = await this.jwtService.signAsync(
       { sub: userId, email },
-      { secret: process.env.ACCESS_SECRET_KEY, expiresIn: '1h' },
+      { secret: this.configService.get<string>('ACCESS_SECRET_KEY'), expiresIn: '1h' },
     );
     const refreshToken = await this.jwtService.signAsync(
       { sub: userId, email },
-      { secret: process.env.REFRESH_SECRET_KEY, expiresIn: '7d' },
+      { secret: this.configService.get<string>('REFRESH_SECRET_KEY'), expiresIn: '7d' },
     );
     return { access_token: accessToken, refresh_token: refreshToken}
   }

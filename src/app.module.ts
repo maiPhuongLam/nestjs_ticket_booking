@@ -6,6 +6,8 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AddressModule } from './modules/address/address.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AcessTokenGuard } from './common/guards';
 
 @Module({
   imports: [
@@ -18,6 +20,9 @@ import { AddressModule } from './modules/address/address.module';
     AddressModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_GUARD,
+    useClass: AcessTokenGuard
+  }],
 })
 export class AppModule {}
