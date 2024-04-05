@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserRepository } from './repositories/user.repository';
 import { User } from '@prisma/client';
@@ -19,26 +23,26 @@ export class UserService {
 
   async getUser(id: number): Promise<User> {
     try {
-      const user = await this.userRepository.findById(id)
+      const user = await this.userRepository.findById(id);
 
       if (!user) {
-        throw new NotFoundException()
+        throw new NotFoundException();
       }
 
-      return user
+      return user;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
-  async createUser(createUserDto: CreateUserDto,): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
       const user = await this.userRepository.creat(createUserDto);
       if (!user) {
-        throw new BadRequestException()
+        throw new BadRequestException();
       }
 
-      return user
+      return user;
     } catch (error) {
       throw error;
     }
@@ -46,10 +50,10 @@ export class UserService {
 
   async updateUser(id: number, updateUserDto: UpdateUserDto) {
     try {
-      const userExist = await this.getUser(id)
-      return await this.userRepository.update(userExist.id, updateUserDto)
+      const userExist = await this.getUser(id);
+      return await this.userRepository.update(userExist.id, updateUserDto);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

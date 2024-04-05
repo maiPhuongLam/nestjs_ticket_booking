@@ -13,7 +13,13 @@ import { ConfigService } from '@nestjs/config';
     }),
     UserModule,
   ],
-  providers: [AuthService, JwtService, AccessStrategy, RefreshStrategy, ConfigService],
   controllers: [AuthController],
+  providers: [
+    ConfigService,
+    AuthService,
+    JwtService,
+    AccessStrategy,
+    RefreshStrategy,
+  ],
 })
 export class AuthModule {}

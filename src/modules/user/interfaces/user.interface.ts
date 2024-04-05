@@ -7,7 +7,7 @@ export interface CreateUserBody {
   phone: string;
   status: UserStatus;
   address_id?: never;
-  rt?: string
+  rt?: string;
 }
 
 export interface UpdateUserBody extends Partial<CreateUserBody> {}
