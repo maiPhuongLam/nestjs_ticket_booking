@@ -10,11 +10,9 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto';
-
-import { CurrentUser, CurrentUserId } from 'src/common/decorators';
-import { Public } from 'src/common/decorators/public.decorator';
-import { AcessTokenGuard, RefreshTokenGuard } from 'src/common/guards';
-import { AccessStrategy } from './strategies';
+import { CurrentUser, CurrentUserId, Public } from 'src/common/decorators';
+import { RefreshTokenGuard } from 'src/common/guards';
+import { UserRoles } from '../user/enums';
 
 @Controller('auth')
 export class AuthController {
@@ -47,7 +45,8 @@ export class AuthController {
   async refreshToken(
     @CurrentUserId() userId: number,
     @CurrentUser('refresh_token') refreshToken: string,
+    @CurrentUser('role') role: UserRoles,
   ) {
-    return this.authSerice.refreshToken(userId, refreshToken);
+    return this.authSerice.refreshToken(userId, refreshToken, role);
   }
 }

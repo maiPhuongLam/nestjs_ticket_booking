@@ -6,8 +6,8 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { CreateUserBody } from '../interfaces/user.interface';
-import { UserStatus } from '@prisma/client';
+import { CreateUserBody } from '../interfaces/creat-user-body.interface';
+import { UserRoles } from '../enums';
 
 export class CreateUserDto implements CreateUserBody {
   @IsNotEmpty()
@@ -27,11 +27,10 @@ export class CreateUserDto implements CreateUserBody {
   @IsString()
   phone: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @IsEnum(UserStatus)
-  status: UserStatus;
-
   @IsOptional()
   rt?: string;
+
+  @IsNotEmpty()
+  @IsEnum(UserRoles)
+  role: UserRoles;
 }

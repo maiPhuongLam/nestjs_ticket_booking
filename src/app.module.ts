@@ -9,6 +9,7 @@ import { AddressModule } from './modules/address/address.module';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AcessTokenGuard } from './common/guards';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { MovieModule } from './modules/movie/movie.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     UserModule,
     AuthModule,
     AddressModule,
+    MovieModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateUserBody, UpdateUserBody } from '../interfaces/user.interface';
+import { CreateUserBody, UpdateUserBody } from '../interfaces';
 
 @Injectable()
 export class UserRepository {
@@ -15,15 +15,49 @@ export class UserRepository {
   }
 
   findByEmail(email: string): Promise<User | null> {
-    return this.repository.findUnique({ where: { email } });
+    return this.repository.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        password: true,
+        address_id: true,
+        status: true,
+        rt: true,
+        created_at: true,
+        updated_at: true,
+        admin: true,
+        customer: true,
+        front_desk_officer: true,
+      },
+    });
   }
 
   findById(id: number): Promise<User | null> {
     return this.repository.findUnique({ where: { id } });
   }
 
-  creat(data: CreateUserBody): Promise<User> {
-    return this.repository.create({ data });
+  creat(data: CreateUserBody): Promise<User | null> {
+    return this.repository.create({
+      data: { ...data, status: UserStatus.ACTIVE },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        password: true,
+        address_id: true,
+        status: true,
+        rt: true,
+        created_at: true,
+        updated_at: true,
+        admin: true,
+        customer: true,
+        front_desk_officer: true,
+      },
+    });
   }
 
   update(id: number, data: UpdateUserBody): Promise<User> {

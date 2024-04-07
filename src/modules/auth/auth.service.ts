@@ -5,13 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { Token } from './interfaces/token.interface';
 import { hash, validate } from 'src/common/utils';
 import { LoginDto } from './dto';
 import { ConfigService } from '@nestjs/config';
+import { UserRoles } from '../user/enums';
 @Injectable()
 export class AuthService {
   constructor(
@@ -23,13 +23,17 @@ export class AuthService {
   async registerLocal(reigsterDto: RegisterDto): Promise<Token> {
     try {
       const userExist = await this.userService.findUserExist(reigsterDto.email);
+
       if (userExist) {
         throw new ConflictException('Email already use');
       } else {
+
         reigsterDto.password = await hash(reigsterDto.password);
         const user = await this.userService.createUser(reigsterDto);
-        const token = await this.generateToken(user.id, user.email);
+        const role: UserRoles = this.userService.checkRole(user);
+        const token = await this.generateToken(user.id, user.email, role);
         await this.updateRefreshTokenHash(user.id, token.refresh_token);
+
         return token;
       }
     } catch (error) {
@@ -45,13 +49,14 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-
+      
       const matchPassword = await validate(password, user.password);
       if (!matchPassword) {
         throw new ForbiddenException('Password wrong');
       }
+      const role: UserRoles = this.userService.checkRole(user);
 
-      const token = await this.generateToken(user.id, user.email);
+      const token = await this.generateToken(user.id, user.email, role);
       await this.updateRefreshTokenHash(user.id, token.refresh_token);
 
       return token;
@@ -73,7 +78,11 @@ export class AuthService {
     }
   }
 
-  async refreshToken(userId: number, refreshToken: string): Promise<Token> {
+  async refreshToken(
+    userId: number,
+    refreshToken: string,
+    role: UserRoles,
+  ): Promise<Token> {
     try {
       const user = await this.userService.getUser(userId);
 
@@ -81,7 +90,7 @@ export class AuthService {
         throw new ForbiddenException('Invalid or missing refresh token');
       }
 
-      const token = await this.generateToken(user.id, user.email);
+      const token = await this.generateToken(user.id, user.email, role);
       await this.updateRefreshTokenHash(user.id, token.refresh_token);
 
       return token;
@@ -90,16 +99,20 @@ export class AuthService {
     }
   }
 
-  async generateToken(userId: number, email: string): Promise<Token> {
+  async generateToken(
+    userId: number,
+    email: string,
+    role: UserRoles,
+  ): Promise<Token> {
     const accessToken = await this.jwtService.signAsync(
-      { sub: userId, email },
+      { sub: userId, email, role },
       {
         secret: this.configService.get<string>('ACCESS_SECRET_KEY'),
         expiresIn: '1h',
       },
     );
     const refreshToken = await this.jwtService.signAsync(
-      { sub: userId, email },
+      { sub: userId, email, role },
       {
         secret: this.configService.get<string>('REFRESH_SECRET_KEY'),
         expiresIn: '7d',
