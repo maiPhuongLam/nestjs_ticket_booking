@@ -12,4 +12,8 @@ export class CustomerRepository {
   create(id: number): Promise<Customer> {
     return this.repository.create({ data: { user_id: id } });
   }
+
+  findByUserId(id: number): Promise<Customer | null> {
+    return this.repository.findUnique({ where: { user_id: id } });
+  }
 }

@@ -27,7 +27,6 @@ export class AuthService {
       if (userExist) {
         throw new ConflictException('Email already use');
       } else {
-
         reigsterDto.password = await hash(reigsterDto.password);
         const user = await this.userService.createUser(reigsterDto);
         const role: UserRoles = this.userService.checkRole(user);
@@ -49,7 +48,7 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      
+
       const matchPassword = await validate(password, user.password);
       if (!matchPassword) {
         throw new ForbiddenException('Password wrong');

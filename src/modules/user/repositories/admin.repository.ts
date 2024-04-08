@@ -12,4 +12,8 @@ export class AdminRepository {
   create(id: number): Promise<Admin> {
     return this.repository.create({ data: { user_id: id } });
   }
+
+  findByUserId(id: number): Promise<Admin | null> {
+    return this.repository.findUnique({ where: { user_id: id } });
+  }
 }

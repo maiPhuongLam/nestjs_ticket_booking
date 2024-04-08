@@ -12,4 +12,8 @@ export class FdoRepository {
   create(id: number): Promise<FrontDeskOfficer> {
     return this.repository.create({ data: { user_id: id } });
   }
+
+  findByUserId(id: number): Promise<FrontDeskOfficer | null> {
+    return this.repository.findUnique({ where: { user_id: id } });
+  }
 }

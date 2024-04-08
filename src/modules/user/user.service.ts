@@ -26,7 +26,7 @@ export class UserService {
   async findUserExist(email: string): Promise<User> {
     try {
       const user = await this.userRepository.findByEmail(email);
-      return user
+      return user;
     } catch (error) {
       throw error;
     }
@@ -107,6 +107,23 @@ export class UserService {
       return UserRoles.CUSTOMER;
     } else {
       return UserRoles.FRONT_DESK_OFFICER;
+    }
+  }
+
+  async getIdOfUserRole(userId: number, role: UserRoles): Promise<number> {
+    try {
+      switch (role) {
+        case UserRoles.ADMIN:
+          return (await this.adminRepository.findByUserId(userId)).id;
+        case UserRoles.CUSTOMER:
+          return (await this.customerRepository.findByUserId(userId)).id;
+        case UserRoles.FRONT_DESK_OFFICER:
+          return (await this.fdoRepository.findByUserId(userId)).id;
+        default:
+          throw new BadRequestException();
+      }
+    } catch (error) {
+      throw error;
     }
   }
 }

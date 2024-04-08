@@ -19,7 +19,7 @@ export class CreateMovieDto {
   language: string;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsString()
   release_date: Date;
 
   @IsNotEmpty()
