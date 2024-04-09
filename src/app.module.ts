@@ -10,6 +10,9 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AcessTokenGuard } from './common/guards';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { MovieModule } from './modules/movie/movie.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { ShowModule } from './modules/show/show.module';
+import { CinemaModule } from './modules/cinema/cinema.module';
 
 @Module({
   imports: [
@@ -21,6 +24,9 @@ import { MovieModule } from './modules/movie/movie.module';
     AuthModule,
     AddressModule,
     MovieModule,
+    TicketModule,
+    ShowModule,
+    CinemaModule,
   ],
   controllers: [AppController],
   providers: [

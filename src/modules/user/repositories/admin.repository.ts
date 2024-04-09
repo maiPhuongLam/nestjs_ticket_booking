@@ -4,9 +4,10 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class AdminRepository {
-  private repository: Prisma.AdminDelegate;
-  constructor(private readonly prismaService: PrismaService) {
-    this.repository = this.prismaService.admin;
+  constructor(private readonly prismaService: PrismaService) {}
+
+  private get repository(): Prisma.AdminDelegate {
+    return this.prismaService.admin;
   }
 
   create(id: number): Promise<Admin> {

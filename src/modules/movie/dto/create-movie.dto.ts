@@ -1,10 +1,20 @@
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { CreateMovieBody } from '../interfaces';
 
 export class CreateMovieDto {
   @IsNotEmpty()
   @IsString()
   title: string;
+
+  @IsOptional()
+  @IsString()
+  thumbnail: string;
 
   @IsNotEmpty()
   @IsString()

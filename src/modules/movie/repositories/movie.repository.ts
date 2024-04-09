@@ -5,9 +5,10 @@ import { CreateMovieBody, MovieFilter, UpdateMovieBody } from '../interfaces';
 
 @Injectable()
 export class MovieRepository {
-  private repository: Prisma.MovieDelegate;
-  constructor(private readonly prismaService: PrismaService) {
-    this.repository = this.prismaService.movie;
+  constructor(private readonly prismaService: PrismaService) {}
+
+  private get repository(): Prisma.MovieDelegate {
+    return this.prismaService.movie;
   }
 
   create(data: CreateMovieBody): Promise<Movie> {
@@ -29,6 +30,8 @@ export class MovieRepository {
       select: {
         id: true,
         title: true,
+        thumbnail_public_id: true,
+        thumbnail_url: true,
         genre: true,
         country: true,
         language: true,

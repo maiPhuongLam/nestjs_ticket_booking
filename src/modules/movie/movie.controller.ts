@@ -1,4 +1,15 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  FileTypeValidator,
+  Get,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from './dto';
 import { RolesGuard } from 'src/common/guards';
@@ -12,10 +23,30 @@ export class MovieController {
   @UseGuards(RolesGuard)
   @Roles([UserRoles.ADMIN])
   @Post()
-  async create(
+  async addMovie(
     @CurrentUserId() userId: number,
     @Body() createMovieDto: CreateMovieDto,
   ) {
-    return this.movieService.createMovie(userId, createMovieDto);
+    return await this.movieService.createMovie(userId, createMovieDto);
+  }
+
+  @Get()
+  async getMovie(@Param('id') id: number) {
+    return await this.movieService.getMovie(id);
+  }
+
+  @Patch(':id/thumbnail')
+  async uploadMovieThumnail(
+    @Param('id') id: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return await this.movieService.uploadMovieThumnail(id, file);
   }
 }

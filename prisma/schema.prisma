@@ -54,7 +54,7 @@ model User {
   id                 Int               @id @default(autoincrement())
   name               String
   email              String            @unique
-  phone              String            
+  phone              String
   password           String
   admin              Admin?
   customer           Customer?
@@ -71,7 +71,7 @@ model User {
 model Admin {
   id      Int     @id @default(autoincrement())
   user_id Int     @unique
-  user    User    @relation(fields: [user_id], references: [id])
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   movies  Movie[]
   shows   Show[]
 }
@@ -79,7 +79,7 @@ model Admin {
 model Customer {
   id       Int       @id @default(autoincrement())
   user_id  Int       @unique
-  user     User      @relation(fields: [user_id], references: [id])
+  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookings Booking[]
 }
 
@@ -116,18 +116,20 @@ model Notification {
 }
 
 model Movie {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String
-  duration_min Int
-  language     String
-  release_date DateTime
-  country      String
-  genre        String
-  admin_id     Int      @unique
-  admin        Admin    @relation(fields: [admin_id], references: [id])
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id                  Int      @id @default(autoincrement())
+  title               String
+  description         String
+  duration_min        Int
+  language            String
+  thumbnail_public_id String?
+  thumbnail_url       String?  @default("https://s.net.vn/nCGD")
+  release_date        DateTime
+  country             String
+  genre               String
+  admin_id            Int
+  admin               Admin    @relation(fields: [admin_id], references: [id])
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 }
 
 model Show {
@@ -147,36 +149,46 @@ model Show {
 model CinemaHall {
   id               Int              @id @default(autoincrement())
   name             String
-  total_seats      Int
+  total_seats      Int  
+  total_rows       Int
+  rows             Row[]
   shows            Show[]
   cinema_id        Int
-  cinema           Cinema @relation(fields: [cinema_id], references: [id])
-  cinema_hall_seat CinemaHallSeat[]
+  cinema           Cinema           @relation(fields: [cinema_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
 }
 
-model CinemaHallSeat {
+model Row {
+  id               Int              @id @default(autoincrement())
+  row_num          Int           
+  total_seats      Int
+  cinema_hall_id   Int 
+  cinema_hall      CinemaHall @relation(fields: [cinema_hall_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seats            Seat[]
+}
+
+model Seat {
   id             Int        @id @default(autoincrement())
   seat_row       Int
   seat_col       Int
   type           SeatType
-  cinema_hall_id Int
-  cinema_hall    CinemaHall @relation(fields: [cinema_hall_id], references: [id])
+  row_id         Int
+  row            Row @relation(fields: [row_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   show_seat      ShowSeat?
   created_at     DateTime   @default(now())
   updated_at     DateTime   @updatedAt
 }
 
 model Cinema {
-  id                Int      @id @default(autoincrement())
+  id                Int          @id @default(autoincrement())
   name              String
   total_cinema_hall Int
   cinemaHalls       CinemaHall[]
-  address_id        Int      @unique
-  address           Address  @relation(fields: [address_id], references: [id])
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  address_id        Int          @unique
+  address           Address      @relation(fields: [address_id], references: [id])
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
 }
 
 model Booking_FrontDeskOfficer {
@@ -231,9 +243,9 @@ model ShowSeat {
   booking_id          Int
   booking             Booking        @relation(fields: [booking_id], references: [id])
   show_id             Int
-  show                Show           @relation(fields: [show_id], references: [id])
+  show                Show           @relation(fields: [show_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   cinema_hall_seat_id Int            @unique
-  cinema_hall_seat    CinemaHallSeat @relation(fields: [cinema_hall_seat_id], references: [id])
+  cinema_hall_seat    Seat @relation(fields: [cinema_hall_seat_id], references: [id])
 }
 
 model Payment {

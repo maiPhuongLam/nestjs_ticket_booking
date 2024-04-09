@@ -4,9 +4,10 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class FdoRepository {
-  private repository: Prisma.FrontDeskOfficerDelegate;
-  constructor(private readonly prismaService: PrismaService) {
-    this.repository = this.prismaService.frontDeskOfficer;
+  constructor(private readonly prismaService: PrismaService) {}
+
+  private get repository(): Prisma.FrontDeskOfficerDelegate {
+    return this.prismaService.frontDeskOfficer;
   }
 
   create(id: number): Promise<FrontDeskOfficer> {

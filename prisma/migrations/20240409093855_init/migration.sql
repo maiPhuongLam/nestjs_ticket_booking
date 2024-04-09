@@ -7,6 +7,7 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NOT NULL,
     `address_id` INTEGER NULL,
     `status` ENUM('ACTIVE', 'CLOSED', 'CANCELED', 'BLACKLISTED', 'BLOCKED') NOT NULL,
+    `rt` VARCHAR(191) NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -74,6 +75,8 @@ CREATE TABLE `Movie` (
     `description` VARCHAR(191) NOT NULL,
     `duration_min` INTEGER NOT NULL,
     `language` VARCHAR(191) NOT NULL,
+    `thumbnail_public_id` VARCHAR(191) NULL,
+    `thumbnail_url` VARCHAR(191) NULL DEFAULT 'https://s.net.vn/nCGD',
     `release_date` DATETIME(3) NOT NULL,
     `country` VARCHAR(191) NOT NULL,
     `genre` VARCHAR(191) NOT NULL,
@@ -81,7 +84,6 @@ CREATE TABLE `Movie` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Movie_admin_id_key`(`admin_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -103,6 +105,8 @@ CREATE TABLE `CinemaHall` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `total_seats` INTEGER NOT NULL,
+    `total_rows` INTEGER NOT NULL,
+    `cinema_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -110,12 +114,22 @@ CREATE TABLE `CinemaHall` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `CinemaHallSeat` (
+CREATE TABLE `Row` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `row_num` INTEGER NOT NULL,
+    `total_seats` INTEGER NOT NULL,
+    `cinema_hall_id` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Seat` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `seat_row` INTEGER NOT NULL,
     `seat_col` INTEGER NOT NULL,
     `type` ENUM('REGULAR', 'PREMIUM', 'ACCESSIBLE', 'EMERGENCYEXIT', 'OTHER') NOT NULL,
-    `cinema_hall_id` INTEGER NOT NULL,
+    `row_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -270,7 +284,13 @@ ALTER TABLE `Show` ADD CONSTRAINT `Show_admin_id_fkey` FOREIGN KEY (`admin_id`) 
 ALTER TABLE `Show` ADD CONSTRAINT `Show_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CinemaHallSeat` ADD CONSTRAINT `CinemaHallSeat_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `CinemaHall` ADD CONSTRAINT `CinemaHall_cinema_id_fkey` FOREIGN KEY (`cinema_id`) REFERENCES `Cinema`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Row` ADD CONSTRAINT `Row_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Seat` ADD CONSTRAINT `Seat_row_id_fkey` FOREIGN KEY (`row_id`) REFERENCES `Row`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Cinema` ADD CONSTRAINT `Cinema_address_id_fkey` FOREIGN KEY (`address_id`) REFERENCES `Address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -300,7 +320,7 @@ ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_booking_id_fkey` FOREIGN KEY (`b
 ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_show_id_fkey` FOREIGN KEY (`show_id`) REFERENCES `Show`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_cinema_hall_seat_id_fkey` FOREIGN KEY (`cinema_hall_seat_id`) REFERENCES `CinemaHallSeat`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_cinema_hall_seat_id_fkey` FOREIGN KEY (`cinema_hall_seat_id`) REFERENCES `Seat`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Payment` ADD CONSTRAINT `Payment_booking_id_fkey` FOREIGN KEY (`booking_id`) REFERENCES `Booking`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
