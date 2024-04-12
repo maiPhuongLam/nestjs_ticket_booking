@@ -20,5 +20,6 @@ import {
     SeatRepository,
     RowRepository,
   ],
+  exports: [CinemaService],
 })
 export class CinemaModule {}

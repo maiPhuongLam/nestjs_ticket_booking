@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Cinema, Row, SeatType } from '@prisma/client';
-import { CreateCinemaDto, CreateCinemaHallDto, CreateSeatDto } from './dto';
+import { SeatType } from '@prisma/client';
+import { CinemaResponseDto, CreateCinemaDto, CreateCinemaHallDto } from './dto';
 import { AddressService } from '../address/address.service';
 import {
   CinemaHallRepository,
@@ -12,7 +12,7 @@ import {
   RowRepository,
   SeatRepository,
 } from './repositories';
-import { SetSeatTypeDto } from './dto/set-Seat-Type.dto';
+import { CinemaHallResponseDto } from './dto/cinema-hall-response.dto';
 
 @Injectable()
 export class CinemaService {
@@ -24,27 +24,49 @@ export class CinemaService {
     private readonly addressService: AddressService,
   ) {}
 
-  async getAllCinemas(): Promise<Cinema[]> {
-    return this.cinemaRepository.findAll();
+  async getAllCinemas(): Promise<CinemaResponseDto[]> {
+    const cinemas = await this.cinemaRepository.findAll();
+    const result = cinemas.map((cinema) =>
+      CinemaResponseDto.plainToClass(cinema),
+    );
+    return result;
   }
 
-  async getCinema(id: number): Promise<Cinema | null> {
+  async getCinema(id: number): Promise<CinemaResponseDto> {
     const cinema = await this.cinemaRepository.findById(id);
+
     if (!cinema) {
       throw new NotFoundException('Cinema not found');
     }
-    return cinema;
+
+    return CinemaResponseDto.plainToClass(cinema);
   }
 
-  async createCinema(createCinemaDto: CreateCinemaDto): Promise<Cinema> {
+  async getCinemaHall(hallId: number): Promise<CinemaHallResponseDto> {
+    try {
+      const cinemaHall = await this.cinemaHallRepository.findById(hallId);
+
+      if (!cinemaHall) {
+        throw new NotFoundException('hall not found');
+      }
+      return CinemaHallResponseDto.plainToClass(cinemaHall);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createCinema(
+    createCinemaDto: CreateCinemaDto,
+  ): Promise<CinemaResponseDto> {
     try {
       const { address, name, total_cinema_hall } = createCinemaDto;
       const cinemaAddress = await this.addressService.createAddress(address);
-      return this.cinemaRepository.create({
+      const cinema = await this.cinemaRepository.create({
         address_id: cinemaAddress.id,
         name,
         total_cinema_hall,
       });
+      return CinemaResponseDto.plainToClass(cinema);
     } catch (error) {
       throw error;
     }
@@ -53,23 +75,28 @@ export class CinemaService {
   async updateCinema(
     id: number,
     updateData: Partial<CreateCinemaDto>,
-  ): Promise<Cinema | null> {
+  ): Promise<CinemaResponseDto> {
     const existingCinema = await this.cinemaRepository.findById(id);
     if (!existingCinema) {
       throw new NotFoundException('Cinema not found');
     }
-    return this.cinemaRepository.update(id, updateData);
+    const cinema = await this.cinemaRepository.update(id, updateData);
+    return CinemaResponseDto.plainToClass(cinema);
   }
 
-  async deleteCinema(id: number): Promise<Cinema | null> {
+  async deleteCinema(id: number): Promise<CinemaResponseDto> {
     const existingCinema = await this.cinemaRepository.findById(id);
     if (!existingCinema) {
       throw new NotFoundException('Cinema not found');
     }
-    return this.cinemaRepository.delete(id);
+    const cinema = await this.cinemaRepository.delete(id);
+    return CinemaResponseDto.plainToClass(cinema);
   }
 
-  async addHallToCinema(id: number, createCinemaHallDto: CreateCinemaHallDto) {
+  async addHallToCinema(
+    id: number,
+    createCinemaHallDto: CreateCinemaHallDto,
+  ): Promise<CinemaHallResponseDto> {
     const { num_seats_per_row, total_rows, name, total_seats } =
       createCinemaHallDto;
     const cinema = await this.getCinema(id);
@@ -103,7 +130,7 @@ export class CinemaService {
         });
       }
     }
-    return cinemaHall;
+    return CinemaHallResponseDto.plainToClass(cinemaHall);
   }
 
   async updateSeatType(seatId: number, seatType: SeatType) {
