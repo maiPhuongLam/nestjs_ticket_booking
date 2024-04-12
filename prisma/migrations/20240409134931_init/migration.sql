@@ -94,6 +94,7 @@ CREATE TABLE `Show` (
     `end_time` DATETIME(3) NOT NULL,
     `admin_id` INTEGER NOT NULL,
     `cinema_hall_id` INTEGER NOT NULL,
+    `movie_id` INTEGER NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
@@ -260,10 +261,10 @@ CREATE TABLE `Coupon` (
 ALTER TABLE `User` ADD CONSTRAINT `User_address_id_fkey` FOREIGN KEY (`address_id`) REFERENCES `Address`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Admin` ADD CONSTRAINT `Admin_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Admin` ADD CONSTRAINT `Admin_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Customer` ADD CONSTRAINT `Customer_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Customer` ADD CONSTRAINT `Customer_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `FrontDeskOfficer` ADD CONSTRAINT `FrontDeskOfficer_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -284,13 +285,16 @@ ALTER TABLE `Show` ADD CONSTRAINT `Show_admin_id_fkey` FOREIGN KEY (`admin_id`) 
 ALTER TABLE `Show` ADD CONSTRAINT `Show_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `CinemaHall` ADD CONSTRAINT `CinemaHall_cinema_id_fkey` FOREIGN KEY (`cinema_id`) REFERENCES `Cinema`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Show` ADD CONSTRAINT `Show_movie_id_fkey` FOREIGN KEY (`movie_id`) REFERENCES `Movie`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Row` ADD CONSTRAINT `Row_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `CinemaHall` ADD CONSTRAINT `CinemaHall_cinema_id_fkey` FOREIGN KEY (`cinema_id`) REFERENCES `Cinema`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Seat` ADD CONSTRAINT `Seat_row_id_fkey` FOREIGN KEY (`row_id`) REFERENCES `Row`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Row` ADD CONSTRAINT `Row_cinema_hall_id_fkey` FOREIGN KEY (`cinema_hall_id`) REFERENCES `CinemaHall`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Seat` ADD CONSTRAINT `Seat_row_id_fkey` FOREIGN KEY (`row_id`) REFERENCES `Row`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Cinema` ADD CONSTRAINT `Cinema_address_id_fkey` FOREIGN KEY (`address_id`) REFERENCES `Address`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -317,7 +321,7 @@ ALTER TABLE `SmsNotification` ADD CONSTRAINT `SmsNotification_notification_id_fk
 ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_booking_id_fkey` FOREIGN KEY (`booking_id`) REFERENCES `Booking`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_show_id_fkey` FOREIGN KEY (`show_id`) REFERENCES `Show`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_show_id_fkey` FOREIGN KEY (`show_id`) REFERENCES `Show`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ShowSeat` ADD CONSTRAINT `ShowSeat_cinema_hall_seat_id_fkey` FOREIGN KEY (`cinema_hall_seat_id`) REFERENCES `Seat`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
