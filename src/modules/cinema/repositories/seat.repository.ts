@@ -19,6 +19,10 @@ export class SeatRepository {
     return await this.repository.findUnique({ where: { id } });
   }
 
+  async findByHallId(row_id: number) {
+    return await this.repository.findMany({ where: { row_id } });
+  }
+
   async update(id: number, data: Partial<CreateSeatBody>): Promise<Seat> {
     return await this.repository.update({
       where: { id },
