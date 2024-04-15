@@ -13,8 +13,6 @@ export class ShowService {
     private showRepository: ShowRepository,
     private showSeatRepository: ShowSeatRepository,
     private userService: UserService,
-    private cinemaService: CinemaService,
-    private movieService: MovieService,
   ) {}
 
   async getShow(id: number): Promise<any> {
@@ -38,7 +36,7 @@ export class ShowService {
           orderBy = { name: 'asc' };
           break;
         case 'descName':
-          orderBy = { name: 'desc' }; // Corrected to 'desc'
+          orderBy = { name: 'desc' };
           break;
         default:
           orderBy = { name: 'asc' };

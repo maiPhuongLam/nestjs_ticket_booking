@@ -8,7 +8,6 @@ export interface IShowRepository {
   create(data: ICreateShowBody): Promise<IShowDetails>;
   findById(id: number): Promise<IShowDetails | null>;
   update(id: number, data: Partial<ICreateShowBody>): Promise<IShowDetails>;
-  findShowsInCinema(cinemaId: number): Promise<Show[]>;
-  findShowsByMovie(movieId: number): Promise<Show[]>;
   find(filter: IShowFilter): Promise<Show[]>;
+  delete(id: number): Promise<Show>
 }

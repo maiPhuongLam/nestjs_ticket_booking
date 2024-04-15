@@ -103,16 +103,6 @@ export class ShowRepository implements IShowRepository {
     });
   }
 
-  async findShowsInCinema(cinemaId: number): Promise<Show[]> {
-    return await this.repository.findMany({
-      where: { cinemaHall: { id: cinemaId } },
-    });
-  }
-
-  async findShowsByMovie(movieId: number): Promise<Show[]> {
-    return await this.repository.findMany({ where: { movieId: movieId } });
-  }
-
   async find(filter: IShowFilter): Promise<Show[]> {
     const { movieTitle, ...showFilter } = filter;
 
@@ -141,5 +131,9 @@ export class ShowRepository implements IShowRepository {
     };
 
     return await this.repository.findMany(queryOptions);
+  }
+
+  async delete(id: number): Promise<Show> {
+    return await this.repository.delete({ where: { id } })
   }
 }

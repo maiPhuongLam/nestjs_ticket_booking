@@ -5,11 +5,9 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ShowRepository } from './repositories/show.repository';
 import { UserModule } from '../user/user.module';
 import { ShowSeatRepository } from './repositories';
-import { CinemaModule } from '../cinema/cinema.module';
-import { MovieModule } from '../movie/movie.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, CinemaModule, MovieModule],
+  imports: [PrismaModule, UserModule, ],
   controllers: [ShowController],
   providers: [ShowService, ShowRepository, ShowSeatRepository],
 })

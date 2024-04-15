@@ -24,7 +24,7 @@ export class ShowController {
     @CurrentUserId() userId: number,
     @Body() createShowDto: CreateShowDto,
   ) {
-    // return await this.showService.creatShow(userId, createShowDto);
+    return await this.showService.creatShow(userId, createShowDto);
   }
 
   @Public()
