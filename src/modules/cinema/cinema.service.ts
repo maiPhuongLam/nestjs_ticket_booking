@@ -25,21 +25,29 @@ export class CinemaService {
   ) {}
 
   async getAllCinemas(): Promise<CinemaResponseDto[]> {
-    const cinemas = await this.cinemaRepository.findAll();
-    const result = cinemas.map((cinema) =>
-      CinemaResponseDto.plainToClass(cinema),
-    );
-    return result;
+    try {
+      const cinemas = await this.cinemaRepository.findAll();
+      const result = cinemas.map((cinema) =>
+        CinemaResponseDto.plainToClass(cinema),
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getCinema(id: number): Promise<CinemaResponseDto> {
-    const cinema = await this.cinemaRepository.findById(id);
+    try {
+      const cinema = await this.cinemaRepository.findById(id);
 
-    if (!cinema) {
-      throw new NotFoundException('Cinema not found');
+      if (!cinema) {
+        throw new NotFoundException('Cinema not found');
+      }
+
+      return CinemaResponseDto.plainToClass(cinema);
+    } catch (error) {
+      throw error;
     }
-
-    return CinemaResponseDto.plainToClass(cinema);
   }
 
   async getCinemaHall(hallId: number): Promise<CinemaHallResponseDto> {
@@ -59,12 +67,12 @@ export class CinemaService {
     createCinemaDto: CreateCinemaDto,
   ): Promise<CinemaResponseDto> {
     try {
-      const { address, name, total_cinema_hall } = createCinemaDto;
+      const { address, name, totalCinemaHalls } = createCinemaDto;
       const cinemaAddress = await this.addressService.createAddress(address);
       const cinema = await this.cinemaRepository.create({
-        address_id: cinemaAddress.id,
+        addressId: cinemaAddress.id,
         name,
-        total_cinema_hall,
+        totalCinemaHalls,
       });
       return CinemaResponseDto.plainToClass(cinema);
     } catch (error) {
@@ -76,61 +84,73 @@ export class CinemaService {
     id: number,
     updateData: Partial<CreateCinemaDto>,
   ): Promise<CinemaResponseDto> {
-    const existingCinema = await this.cinemaRepository.findById(id);
-    if (!existingCinema) {
-      throw new NotFoundException('Cinema not found');
+    try {
+      const existingCinema = await this.cinemaRepository.findById(id);
+      if (!existingCinema) {
+        throw new NotFoundException('Cinema not found');
+      }
+      const cinema = await this.cinemaRepository.update(id, updateData);
+      return CinemaResponseDto.plainToClass(cinema);
+    } catch (error) {
+      throw error;
     }
-    const cinema = await this.cinemaRepository.update(id, updateData);
-    return CinemaResponseDto.plainToClass(cinema);
   }
 
   async deleteCinema(id: number): Promise<CinemaResponseDto> {
-    const existingCinema = await this.cinemaRepository.findById(id);
-    if (!existingCinema) {
-      throw new NotFoundException('Cinema not found');
+    try {
+      const existingCinema = await this.cinemaRepository.findById(id);
+      if (!existingCinema) {
+        throw new NotFoundException('Cinema not found');
+      }
+      const cinema = await this.cinemaRepository.delete(id);
+      return CinemaResponseDto.plainToClass(cinema);
+    } catch (error) {
+      throw error;
     }
-    const cinema = await this.cinemaRepository.delete(id);
-    return CinemaResponseDto.plainToClass(cinema);
   }
 
   async addHallToCinema(
     id: number,
     createCinemaHallDto: CreateCinemaHallDto,
   ): Promise<CinemaHallResponseDto> {
-    const { num_seats_per_row, total_rows, name, total_seats } =
-      createCinemaHallDto;
-    const cinema = await this.getCinema(id);
+    try {
+      const { numSeatsPerRow, totalRows, name, totalSeats } =
+        createCinemaHallDto;
+      const cinema = await this.getCinema(id);
 
-    const numCinemaHalls =
-      await this.cinemaHallRepository.countCinemaByCinemaId(cinema.id);
+      const numCinemaHalls =
+        await this.cinemaHallRepository.countCinemaByCinemaId(cinema.id);
 
-    if (numCinemaHalls >= cinema.total_cinema_hall) {
-      throw new BadRequestException('Cinema is full hall');
-    }
-
-    const cinemaHall = await this.cinemaHallRepository.creat({
-      cinema_id: id,
-      name,
-      total_rows,
-      total_seats,
-    });
-
-    for (let i = 0; i < total_rows; i++) {
-      const row = await this.rowRepository.create({
-        cinema_hall_id: cinemaHall.id,
-        row_num: i + 1,
-        total_seats: num_seats_per_row[i],
-      });
-      for (let j = 0; j < row.total_seats; j++) {
-        await this.seatRepository.create({
-          row_id: row.id,
-          type: SeatType.REGULAR,
-          seat_row: row.row_num,
-          seat_col: i + 1,
-        });
+      if (numCinemaHalls >= cinema.totalCinemaHalls) {
+        throw new BadRequestException('Cinema is full hall');
       }
+
+      const cinemaHall = await this.cinemaHallRepository.creat({
+        cinemaId: id,
+        name,
+        totalRows,
+        totalSeats,
+      });
+
+      for (let i = 0; i < totalRows; i++) {
+        const row = await this.rowRepository.create({
+          cinemaHallId: cinemaHall.id,
+          rowNum: i + 1,
+          totalSeats: numSeatsPerRow[i],
+        });
+        for (let j = 0; j < row.totalSeats; j++) {
+          await this.seatRepository.create({
+            rowId: row.id,
+            type: SeatType.REGULAR,
+            seatRow: row.rowNum,
+            seatCol: i + 1,
+          });
+        }
+      }
+      return CinemaHallResponseDto.plainToClass(cinemaHall);
+    } catch (error) {
+      throw error;
     }
-    return CinemaHallResponseDto.plainToClass(cinemaHall);
   }
 
   async updateSeatType(seatId: number, seatType: SeatType) {

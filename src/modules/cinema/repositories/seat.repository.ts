@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateSeatBody } from '../interfaces';
+import { ICreateSeatBody, ISeatRepository } from '../interfaces';
 import { Seat } from '@prisma/client';
 
 @Injectable()
-export class SeatRepository {
+export class SeatRepository implements ISeatRepository {
   constructor(private prismaSerice: PrismaService) {}
 
   private get repository() {
     return this.prismaSerice.seat;
   }
 
-  async create(data: CreateSeatBody): Promise<Seat> {
+  async create(data: ICreateSeatBody): Promise<Seat> {
     return await this.repository.create({ data });
   }
 
@@ -19,11 +19,11 @@ export class SeatRepository {
     return await this.repository.findUnique({ where: { id } });
   }
 
-  async findByHallId(row_id: number) {
-    return await this.repository.findMany({ where: { row_id } });
+  async findByHallId(rowId: number) {
+    return await this.repository.findMany({ where: { rowId } });
   }
 
-  async update(id: number, data: Partial<CreateSeatBody>): Promise<Seat> {
+  async update(id: number, data: Partial<ICreateSeatBody>): Promise<Seat> {
     return await this.repository.update({
       where: { id },
       data: data,

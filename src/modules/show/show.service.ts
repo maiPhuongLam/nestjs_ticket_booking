@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException, flatten } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateShowDto } from './dto';
+import { CreateShowDto, ShowFilterDto, ShowResponseDto } from './dto';
 import { ShowRepository } from './repositories/show.repository';
 import { privateDecrypt } from 'crypto';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/enums';
 import { ShowSeatRepository } from './repositories';
 import { CinemaService } from '../cinema/cinema.service';
-import { Row } from '@prisma/client';
+import { Row, Show } from '@prisma/client';
+import { MovieService } from '../movie/movie.service';
 
 @Injectable()
 export class ShowService {
@@ -16,9 +17,10 @@ export class ShowService {
     private showSeatRepository: ShowSeatRepository,
     private userService: UserService,
     private cinemaService: CinemaService,
+    private movieService: MovieService
   ) {}
 
-  async getShow(id) {
+  async getShow(id: number): Promise<ShowResponseDto> {
     try {
       const show = await this.showRepository.findById(id);
 
@@ -26,34 +28,55 @@ export class ShowService {
         throw new NotFoundException();
       }
 
-      return show;
+      return ShowResponseDto.plainToClass(show);
     } catch (error) {
       throw error;
     }
   }
 
-  async creatShow(userId: number, createShowDto: CreateShowDto) {
+  async getShows(filter: ShowFilterDto) {
     try {
-      const { cinema_hall_id, end_time, start_time, movie_id } = createShowDto;
+      let orderBy: Record<string, string>;
+      switch (filter.orderBy) {
+        case 'ascName':
+          orderBy = { name: 'asc' };
+          break;
+        case 'descName':
+          orderBy = { name: 'desc' }; // Corrected to 'desc'
+          break;
+        default:
+          orderBy = { name: 'asc' };
+          break;
+      }
+      return await this.showRepository.find({ ...filter, orderBy });
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+
+  async creatShow(userId: number, createShowDto: CreateShowDto): Promise<Show> {
+    try {
+      const { cinemaHallId, endTime, startTime, movieId } = createShowDto;
       const adminId = await this.userService.getIdOfUserRole(
         userId,
         UserRoles.ADMIN,
       );
       const show = await this.showRepository.create({
-        admin_id: adminId,
-        cinema_hall_id,
-        movie_id,
-        start_time: new Date(start_time),
-        end_time: new Date(end_time),
+        adminId: adminId,
+        cinemaHallId,
+        movieId,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
       });
-      const rows = show.cinema_hall.rows;
-      for (const x of rows) {
-        for (const y of x.seats) {
+      const rows = show.cinemaHall.rows;
+      for (const row of rows) {
+        for (const seat of row.seats) {
           await this.showSeatRepository.create({
-            cinema_hall_seat_id: y.id,
-            is_reserved: false,
-            show_id: show.id,
-            seat_number: `${y.seat_row}-${y.seat_col}`,
+            cinemaHallSeatId: seat.id,
+            isReserved: false,
+            showId: show.id,
+            seatNumber: `${seat.seatRow}-${seat.seatCol}`,
             price: createShowDto.price,
           });
         }

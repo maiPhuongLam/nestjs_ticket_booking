@@ -5,10 +5,10 @@ import { BaseDto } from 'src/common/base.dto';
 export class CinemaResponseDto extends BaseDto {
   id: number;
   name: string;
-  total_cinema_hall: number;
-  address_id: number;
+  totalCinemaHalls: number;
+  addressId: number;
   @Exclude()
-  created_at: Date;
+  createdAt: Date;
   @Exclude()
-  updated_at: Date;
+  updatedAt: Date;
 }

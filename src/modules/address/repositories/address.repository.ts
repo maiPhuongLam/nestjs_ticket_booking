@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Address, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateAddressBody, UpdateAddressBody } from '../interfaces';
+import {
+  CreateAddressBody,
+  IAddressRepository,
+  UpdateAddressBody,
+} from '../interfaces';
 
 @Injectable()
-export class AddressRepository {
-  private repository: Prisma.AddressDelegate;
-  constructor(private readonly prismaService: PrismaService) {
-    this.repository = this.prismaService.address;
+export class AddressRepository implements IAddressRepository {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  private get repository(): Prisma.AddressDelegate {
+    return this.prismaService.address;
   }
 
   async findAll(): Promise<Address[]> {

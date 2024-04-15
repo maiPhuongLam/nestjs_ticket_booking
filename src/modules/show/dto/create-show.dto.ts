@@ -1,20 +1,20 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
-import { CreateShowBody } from '../interfaces';
+import { ICreateShowBody } from '../interfaces';
 
 export class CreateShowDto {
   @IsNotEmpty()
-  start_time: Date;
+  startTime: Date;
 
   @IsNotEmpty()
-  end_time: Date;
-
-  @IsNotEmpty()
-  @IsInt()
-  cinema_hall_id: number;
+  endTime: Date;
 
   @IsNotEmpty()
   @IsInt()
-  movie_id: number;
+  cinemaHallId: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  movieId: number;
 
   @IsInt()
   price: number;

@@ -1,8 +1,8 @@
-export interface CreateShowSeatBody {
-  seat_number: string;
-  is_reserved: boolean;
+export interface ICreateShowSeatBody {
+  seatNumber: string;
+  isReserved: boolean;
   price: number;
-  booking_id?: number;
-  show_id: number;
-  cinema_hall_seat_id: number;
+  bookingId?: number;
+  showId: number;
+  cinemaHallSeatId: number;
 }

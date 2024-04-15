@@ -6,17 +6,17 @@ export class MovieResponseDto extends BaseDto {
   id: number;
   title: string;
   description: string;
-  duration_min: number;
-  thumbnail_public_id: string;
-  thumbnail_url: string;
+  durationMin: number;
+  thumbnailPublicId: string;
+  thumbnailUrl: string;
   language: string;
-  release_date: Date;
+  releaseDate: Date;
   country: string;
   genre: string;
   @Exclude()
-  admin_id: number;
+  adminId: number;
   @Exclude()
-  created_at: Date;
+  createdAt: Date;
   @Exclude()
-  updated_at: Date;
+  updatedAt: Date;
 }

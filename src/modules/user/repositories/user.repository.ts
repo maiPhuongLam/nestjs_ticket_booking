@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User, UserStatus } from '@prisma/client';
+import { $Enums, Prisma, User, UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateUserBody, UpdateUserBody } from '../interfaces';
+import {
+  ICreateUserBody,
+  IUpdateUserBody,
+  IUserRepository,
+} from '../interfaces';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements IUserRepository {
   private repository: Prisma.UserDelegate;
   constructor(private readonly prismaService: PrismaService) {
     this.repository = this.prismaService.user;
@@ -23,14 +27,14 @@ export class UserRepository {
         email: true,
         phone: true,
         password: true,
-        address_id: true,
+        addressId: true,
         status: true,
         rt: true,
-        created_at: true,
-        updated_at: true,
+        createdAt: true,
+        updatedAt: true,
         admin: true,
         customer: true,
-        front_desk_officer: true,
+        frontDeskOfficer: true,
       },
     });
   }
@@ -39,7 +43,7 @@ export class UserRepository {
     return this.repository.findUnique({ where: { id } });
   }
 
-  creat(data: CreateUserBody): Promise<User | null> {
+  create(data: ICreateUserBody): Promise<User | null> {
     return this.repository.create({
       data: { ...data, status: UserStatus.ACTIVE },
       select: {
@@ -48,19 +52,19 @@ export class UserRepository {
         email: true,
         phone: true,
         password: true,
-        address_id: true,
+        addressId: true,
         status: true,
         rt: true,
-        created_at: true,
-        updated_at: true,
+        createdAt: true,
+        updatedAt: true,
         admin: true,
         customer: true,
-        front_desk_officer: true,
+        frontDeskOfficer: true,
       },
     });
   }
 
-  update(id: number, data: UpdateUserBody): Promise<User> {
+  update(id: number, data: IUpdateUserBody): Promise<User> {
     return this.repository.update({ where: { id }, data });
   }
 

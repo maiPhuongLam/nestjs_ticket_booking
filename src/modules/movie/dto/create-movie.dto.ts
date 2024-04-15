@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { CreateMovieBody } from '../interfaces';
+import { ICreateMovieBody } from '../interfaces';
 
 export class CreateMovieDto {
   @IsNotEmpty()
@@ -22,7 +22,7 @@ export class CreateMovieDto {
 
   @IsNotEmpty()
   @IsNumber()
-  duration_min: number;
+  durationMin: number;
 
   @IsNotEmpty()
   @IsString()
@@ -30,7 +30,7 @@ export class CreateMovieDto {
 
   @IsNotEmpty()
   @IsString()
-  release_date: Date;
+  releaseDate: Date;
 
   @IsNotEmpty()
   @IsString()

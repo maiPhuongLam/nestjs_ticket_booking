@@ -1,6 +1,6 @@
 import { UserStatus } from '@prisma/client';
-import { CreateUserBody } from './creat-user-body.interface';
+import { ICreateUserBody } from './creat-user-body.interface';
 
-export interface UpdateUserBody extends Partial<CreateUserBody> {
+export interface IUpdateUserBody extends Partial<ICreateUserBody> {
   status?: UserStatus;
 }

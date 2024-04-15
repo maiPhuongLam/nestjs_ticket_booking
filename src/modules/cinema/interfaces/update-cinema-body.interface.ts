@@ -1,3 +1,3 @@
-import { CreateCinemaBody } from './create-cinema-body.interface';
+import { ICreateCinemaBody } from './create-cinema-body.interface';
 
-export interface UpdateCinemaBody extends Partial<CreateCinemaBody> {}
+export interface IUpdateCinemaBody extends Partial<ICreateCinemaBody> {}

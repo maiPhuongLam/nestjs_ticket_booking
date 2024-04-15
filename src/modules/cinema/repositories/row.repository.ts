@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CinemaHall, Row } from '@prisma/client';
 import { resourceUsage } from 'process';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { UpdateCinemaHallBody } from '../interfaces';
+import { IRowRepository } from '../interfaces';
 
 @Injectable()
-export class RowRepository {
+export class RowRepository implements IRowRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   private get repository() {
@@ -17,19 +17,25 @@ export class RowRepository {
   }
 
   async countRowByHallId(hallId: number) {
-    return await this.repository.count({ where: { cinema_hall_id: hallId } });
+    return await this.repository.count({ where: { cinemaHallId: hallId } });
   }
-
-  async getRowsOfhhall(hallId: number) {
-    return await this.repository.findMany({
-      where: { cinema_hall_id: hallId },
-    });
+  getRowsOfHall(
+    hallId: number,
+  ): Promise<
+    {
+      id: number;
+      rowNum: number;
+      totalSeats: number;
+      cinemaHallId: number;
+    }[]
+  > {
+    throw new Error('Method not implemented.');
   }
 
   async create(data: {
-    total_seats: number;
-    cinema_hall_id: number;
-    row_num: number;
+    totalSeats: number;
+    cinemaHallId: number;
+    rowNum: number;
   }): Promise<Row> {
     return await this.repository.create({ data });
   }

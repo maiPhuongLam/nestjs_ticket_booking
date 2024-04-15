@@ -31,8 +31,8 @@ export class MovieService {
   ): Promise<string> {
     try {
       const movie = await this.getMovie(id);
-      if (movie.thumbnail_public_id) {
-        await cloudinary.v2.uploader.destroy(movie.thumbnail_public_id, {
+      if (movie.thumbnailPublicId) {
+        await cloudinary.v2.uploader.destroy(movie.thumbnailPublicId, {
           invalidate: true,
         });
       }
@@ -51,8 +51,8 @@ export class MovieService {
       });
       fs.unlinkSync(file.path);
       await this.movieRepository.update(id, {
-        thumbnail_public_id: res.public_id,
-        thumbnail_url: res.secure_url,
+        thumbnailPublicId: res.public_id,
+        thumbnailUrl: res.secure_url,
       });
       return res.secure_url;
     } catch (error) {
@@ -71,8 +71,8 @@ export class MovieService {
       );
       const movie = await this.movieRepository.create({
         ...createMovieDto,
-        release_date: new Date(createMovieDto.release_date),
-        admin_id: adminId,
+        releaseDate: new Date(createMovieDto.releaseDate),
+        adminId: adminId,
       });
 
       if (!movie) {
@@ -95,6 +95,20 @@ export class MovieService {
       return MovieResponseDto.plainToClass(movie);
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getMoviesByTitle(title: string): Promise<MovieResponseDto[]> {
+    try {
+      const movies = await this.movieRepository.find({ title });
+      
+      const movieRes = movies.map(movie => {
+        return MovieResponseDto.plainToClass(movie)
+      })
+
+      return movieRes
+    } catch (error) {
+      
     }
   }
 }

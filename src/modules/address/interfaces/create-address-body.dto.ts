@@ -1,5 +1,5 @@
 export interface CreateAddressBody {
-  street_address: string;
+  streetAddress: string;
   state: string;
   zipcode: string;
   country: string;

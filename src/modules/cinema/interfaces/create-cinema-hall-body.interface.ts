@@ -1,6 +1,6 @@
-export interface CreateCinemaHallBody {
+export interface ICreateCinemaHallBody {
   name: string;
-  total_seats: number;
-  total_rows: number;
-  cinema_id: number;
+  totalSeats: number;
+  totalRows: number;
+  cinemaId: number;
 }

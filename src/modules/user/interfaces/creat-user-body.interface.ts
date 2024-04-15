@@ -1,10 +1,10 @@
 import { Address, User, UserStatus } from '@prisma/client';
 
-export interface CreateUserBody {
+export interface ICreateUserBody {
   name: string;
   email: string;
   password: string;
   phone: string;
-  address_id?: never;
+  addressId?: never;
   rt?: string;
 }

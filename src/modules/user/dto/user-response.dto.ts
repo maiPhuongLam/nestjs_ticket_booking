@@ -15,14 +15,14 @@ export class UserResponseDto extends BaseDto {
   phone: string;
   @Exclude()
   password: string;
-  address_id: number | null;
+  addressId: number | null;
   status: UserStatus;
   rt: string | null;
   admin?: Admin;
   customer?: Customer;
-  front_desk_officer?: FrontDeskOfficer;
+  frontDeskOfficer?: FrontDeskOfficer;
   @Exclude()
-  created_at: Date;
+  createdAt: Date;
   @Exclude()
-  updated_at: Date;
+  updatedAt: Date;
 }

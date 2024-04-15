@@ -1,8 +1,8 @@
 export class CreateBookingDto {
-  booking_no: string;
-  number_of_seats: number;
-  show_seat: {
-    seat_number: number;
+  bookingNo: string;
+  numberOfSeats: number;
+  showSeat: {
+    seatNumber: number;
     isReserved: boolean;
     price: number;
   }[];

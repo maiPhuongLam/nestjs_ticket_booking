@@ -3,10 +3,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cinema, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateCinemaDto } from '../dto';
-import { CreateCinemaBody, UpdateCinemaBody } from '../interfaces';
+import {
+  ICinemaRepository,
+  ICreateCinemaBody,
+  IUpdateCinemaBody,
+} from '../interfaces';
 
 @Injectable()
-export class CinemaRepository {
+export class CinemaRepository implements ICinemaRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   private get repository(): Prisma.CinemaDelegate {
@@ -23,10 +27,10 @@ export class CinemaRepository {
       select: {
         id: true,
         name: true,
-        address_id: true,
-        total_cinema_hall: true,
-        created_at: true,
-        updated_at: true,
+        addressId: true,
+        totalCinemaHalls: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
     if (!cinema) {
@@ -35,17 +39,17 @@ export class CinemaRepository {
     return cinema;
   }
 
-  async create(data: CreateCinemaBody): Promise<Cinema> {
+  async create(data: ICreateCinemaBody): Promise<Cinema> {
     return this.repository.create({
       data: {
         name: data.name,
-        total_cinema_hall: data.total_cinema_hall,
-        address_id: data.address_id,
+        totalCinemaHalls: data.totalCinemaHalls,
+        addressId: data.addressId,
       },
     });
   }
 
-  async update(id: number, data: UpdateCinemaBody): Promise<Cinema | null> {
+  async update(id: number, data: IUpdateCinemaBody): Promise<Cinema | null> {
     return this.repository.update({ where: { id }, data });
   }
 

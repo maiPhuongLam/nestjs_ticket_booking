@@ -1,8 +1,8 @@
 import { SeatType } from '@prisma/client';
 
-export interface CreateSeatBody {
-  seat_row: number;
-  seat_col: number;
+export interface ICreateSeatBody {
+  seatRow: number;
+  seatCol: number;
   type: SeatType;
-  row_id: number;
+  rowId: number;
 }

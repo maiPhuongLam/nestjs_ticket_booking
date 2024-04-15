@@ -10,7 +10,7 @@ export class CreateCinemaDto {
   @IsNotEmpty()
   @IsInt()
   @Min(1)
-  total_cinema_hall: number;
+  totalCinemaHalls: number;
 
   @IsNotEmpty()
   address: CreateAddressDto;

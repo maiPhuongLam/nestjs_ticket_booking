@@ -1,10 +1,10 @@
-export interface CreateMovieBody {
+export interface ICreateMovieBody {
   title: string;
   description: string;
-  duration_min: number;
+  durationMin: number;
   language: string;
-  release_date: Date;
+  releaseDate: Date;
   country: string;
   genre: string;
-  admin_id: number;
+  adminId: number;
 }

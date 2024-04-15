@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { FrontDeskOfficer, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { IBaseUserRepository } from '../interfaces';
 
 @Injectable()
-export class FdoRepository {
+export class FdoRepository implements IBaseUserRepository<FrontDeskOfficer> {
   constructor(private readonly prismaService: PrismaService) {}
 
   private get repository(): Prisma.FrontDeskOfficerDelegate {
@@ -11,10 +12,10 @@ export class FdoRepository {
   }
 
   create(id: number): Promise<FrontDeskOfficer> {
-    return this.repository.create({ data: { user_id: id } });
+    return this.repository.create({ data: { userId: id } });
   }
 
   findByUserId(id: number): Promise<FrontDeskOfficer | null> {
-    return this.repository.findUnique({ where: { user_id: id } });
+    return this.repository.findUnique({ where: { userId: id } });
   }
 }

@@ -14,7 +14,7 @@ export class BookingController {
   @Post(':id')
   async createBooking(
     @CurrentUserId() userId: number,
-    @Param('show_id') showId: number,
+    @Param('showId') showId: number,
     @Body() createBookingDto: CreateBookingDto,
   ) {
     return await this.bookingService.createBooking(

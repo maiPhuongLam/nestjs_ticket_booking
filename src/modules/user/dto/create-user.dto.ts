@@ -6,10 +6,10 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { CreateUserBody } from '../interfaces/creat-user-body.interface';
+import { ICreateUserBody } from '../interfaces/creat-user-body.interface';
 import { UserRoles } from '../enums';
 
-export class CreateUserDto implements CreateUserBody {
+export class CreateUserDto implements ICreateUserBody {
   @IsNotEmpty()
   @IsString()
   name: string;

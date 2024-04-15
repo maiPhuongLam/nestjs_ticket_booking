@@ -50,7 +50,7 @@ export class UserService {
     try {
       const { role, ...res } = createUserDto;
 
-      const user = await this.userRepository.creat(res);
+      const user = await this.userRepository.create(res);
 
       if (!user) {
         throw new BadRequestException();

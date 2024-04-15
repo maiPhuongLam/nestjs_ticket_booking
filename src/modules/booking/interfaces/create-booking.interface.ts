@@ -1,9 +1,9 @@
 import { BookingStatus } from '@prisma/client';
 
-export interface CreateBookingBody {
-  booking_no: string;
-  number_of_seats: number;
+export interface ICreateBookingBody {
+  bookingNo: string;
+  numberOfSeats: number;
   status: BookingStatus;
-  customer_id: number;
-  show_id: number;
+  customerId: number;
+  showId: number;
 }

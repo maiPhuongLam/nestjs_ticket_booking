@@ -1,7 +1,7 @@
 import { Address } from '@prisma/client';
 
-export interface CreateCinemaBody {
+export interface ICreateCinemaBody {
   name: string;
-  total_cinema_hall: number;
-  address_id: number;
+  totalCinemaHalls: number;
+  addressId: number;
 }

@@ -1,6 +1,6 @@
-import { CreateMovieBody } from './create-movie-body.interface,ts';
+import { ICreateMovieBody } from './create-movie-body.interface,ts';
 
-export interface UpdateMovieBody extends Partial<CreateMovieBody> {
-  thumbnail_public_id: string;
-  thumbnail_url: string;
+export interface IUpdateMovieBody extends Partial<ICreateMovieBody> {
+  thumbnailPublicId: string;
+  thumbnailUrl: string;
 }

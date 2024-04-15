@@ -22,12 +22,12 @@ export class BookingService {
         userId,
         UserRoles.CUSTOMER,
       );
-      const { booking_no, number_of_seats } = createBookingDto;
+      const { bookingNo, numberOfSeats } = createBookingDto;
       const booking = await this.bookingRepository.create({
-        booking_no,
-        number_of_seats,
-        customer_id: customerId,
-        show_id: showId,
+        bookingNo,
+        numberOfSeats,
+        customerId: customerId,
+        showId: showId,
         status: BookingStatus.PENDING,
       });
       return booking;

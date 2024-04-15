@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { Movie, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateMovieBody, MovieFilter, UpdateMovieBody } from '../interfaces';
+import {
+  ICreateMovieBody,
+  IMovieFilter,
+  IUpdateMovieBody,
+} from '../interfaces';
+import { IMovieRepository } from '../interfaces/movie-repository.interface';
 
 @Injectable()
-export class MovieRepository {
+export class MovieRepository implements IMovieRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   private get repository(): Prisma.MovieDelegate {
     return this.prismaService.movie;
   }
 
-  create(data: CreateMovieBody): Promise<Movie> {
+  create(data: ICreateMovieBody): Promise<Movie> {
     return this.repository.create({ data });
   }
 
-  update(id: number, data: UpdateMovieBody): Promise<Movie> {
+  update(id: number, data: IUpdateMovieBody): Promise<Movie> {
     return this.repository.update({ where: { id }, data });
   }
 
@@ -23,24 +28,30 @@ export class MovieRepository {
     return this.repository.findUnique({ where: { id } });
   }
 
-  find(filter: MovieFilter, orderBy: Record<string, any>): Promise<Movie[]> {
+  find(filter: IMovieFilter,): Promise<Movie[]> {
+    const { orderBy, title, ...movieFilter} = filter
     return this.repository.findMany({
-      where: filter,
+      where: {
+        ...movieFilter,
+        title: {
+          contains: title
+        }, 
+      },
       orderBy: orderBy,
       select: {
         id: true,
         title: true,
-        thumbnail_public_id: true,
-        thumbnail_url: true,
+        thumbnailPublicId: true,
+        thumbnailUrl: true,
         genre: true,
         country: true,
         language: true,
         description: true,
-        release_date: true,
-        created_at: true,
-        duration_min: true,
-        admin_id: true,
-        updated_at: true,
+        releaseDate: true,
+        createdAt: true,
+        durationMin: true,
+        adminId: true,
+        updatedAt: true,
       },
       take: filter.limit || 8,
       skip: (filter.limit || 8) * (+filter.page - 1),

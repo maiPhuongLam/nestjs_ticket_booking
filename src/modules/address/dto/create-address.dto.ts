@@ -9,7 +9,7 @@ import {
 export class CreateAddressDto {
   @IsNotEmpty()
   @IsString()
-  street_address: string;
+  streetAddress: string;
 
   @IsNotEmpty()
   @IsString()
@@ -26,9 +26,9 @@ export class CreateAddressDto {
 
   @IsOptional()
   @IsInt()
-  user_id?: number;
+  userId?: number;
 
   @IsOptional()
   @IsInt()
-  cinema_id?: number;
+  cinemaId?: number;
 }
