@@ -23,6 +23,9 @@ export class CreateCinemaHallDto {
   totalRows: number;
 
   @Transform(({ value, obj }) => {
+    console.log(value.length);
+    console.log(obj);
+
     if (value.length !== obj.totalRows) {
       throw new BadGatewayException('invalid row or numSeatsPerRow');
     }

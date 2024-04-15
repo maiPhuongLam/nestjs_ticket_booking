@@ -14,9 +14,7 @@ export class CinemaHallRepository implements ICinemaHallRepository {
   private get repository() {
     return this.prismaService.cinemaHall;
   }
-  async create(
-    data: ICreateCinemaHallBody,
-  ): Promise<{
+  async create(data: ICreateCinemaHallBody): Promise<{
     id: number;
     name: string;
     totalSeats: number;

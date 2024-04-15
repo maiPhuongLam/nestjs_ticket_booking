@@ -5,5 +5,5 @@ export interface IMovieFilter {
   director?: string;
   genre?: string;
   sort?: string;
-  orderBy?: Record<string, any>
+  orderBy?: Record<string, any>;
 }

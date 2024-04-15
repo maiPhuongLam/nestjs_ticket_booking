@@ -1,13 +1,10 @@
 import { Injectable, NotFoundException, flatten } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { CreateShowDto, ShowFilterDto, ShowResponseDto } from './dto';
 import { ShowRepository } from './repositories/show.repository';
-import { privateDecrypt } from 'crypto';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/enums';
 import { ShowSeatRepository } from './repositories';
 import { CinemaService } from '../cinema/cinema.service';
-import { Row, Show } from '@prisma/client';
 import { MovieService } from '../movie/movie.service';
 
 @Injectable()
@@ -17,24 +14,23 @@ export class ShowService {
     private showSeatRepository: ShowSeatRepository,
     private userService: UserService,
     private cinemaService: CinemaService,
-    private movieService: MovieService
+    private movieService: MovieService,
   ) {}
 
-  async getShow(id: number): Promise<ShowResponseDto> {
+  async getShow(id: number): Promise<any> {
     try {
       const show = await this.showRepository.findById(id);
 
       if (!show) {
         throw new NotFoundException();
       }
-
-      return ShowResponseDto.plainToClass(show);
+      return show
     } catch (error) {
       throw error;
     }
   }
 
-  async getShows(filter: ShowFilterDto) {
+  async getShows(filter: ShowFilterDto): Promise<ShowResponseDto[]> {
     try {
       let orderBy: Record<string, string>;
       switch (filter.orderBy) {
@@ -48,14 +44,17 @@ export class ShowService {
           orderBy = { name: 'asc' };
           break;
       }
-      return await this.showRepository.find({ ...filter, orderBy });
+      const shows = await this.showRepository.find({ ...filter, orderBy });
+      const showsResult = shows.map((show) =>
+        ShowResponseDto.plainToClass(show),
+      );
+      return showsResult;
     } catch (error) {
       throw error;
     }
   }
-  
 
-  async creatShow(userId: number, createShowDto: CreateShowDto): Promise<Show> {
+  async creatShow(userId: number, createShowDto: CreateShowDto): Promise<ShowResponseDto> {
     try {
       const { cinemaHallId, endTime, startTime, movieId } = createShowDto;
       const adminId = await this.userService.getIdOfUserRole(
@@ -81,7 +80,7 @@ export class ShowService {
           });
         }
       }
-      return show;
+      return ShowResponseDto.plainToClass(show);
     } catch (error) {
       throw error;
     }

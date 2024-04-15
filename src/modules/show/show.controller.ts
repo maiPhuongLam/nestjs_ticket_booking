@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ShowService } from './show.service';
 import { CurrentUserId, Public, Roles } from 'src/common/decorators';
 import { RolesGuard } from 'src/common/guards';
@@ -16,7 +24,7 @@ export class ShowController {
     @CurrentUserId() userId: number,
     @Body() createShowDto: CreateShowDto,
   ) {
-    return await this.showService.creatShow(userId, createShowDto);
+    // return await this.showService.creatShow(userId, createShowDto);
   }
 
   @Public()
@@ -32,15 +40,15 @@ export class ShowController {
     @Query('cinemaId') cinemaId?: string,
     @Query('limit') limit?: string,
     @Query('page') page?: string,
-    @Query('orderBy') orderBy?: string
+    @Query('orderBy') orderBy?: string,
   ) {
-    const filter = { 
-      ...(movieTitle && { movieTitle }), 
+    const filter = {
+      ...(movieTitle && { movieTitle }),
       ...(cinemaId && { cinemaId: +cinemaId }),
       ...(cinemaId && { limit: +limit }),
       ...(cinemaId && { page: +page }),
-      ...(orderBy && { orderBy })
-    }
-    return await this.showService.getShows(filter)
+      ...(orderBy && { orderBy }),
+    };
+    return await this.showService.getShows(filter);
   }
 }

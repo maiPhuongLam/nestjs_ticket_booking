@@ -28,6 +28,6 @@ import { ConfigService } from '@nestjs/config';
   ],
   controllers: [MovieController],
   providers: [ConfigService, MovieService, MovieRepository],
-  exports: [MovieService]
+  exports: [MovieService],
 })
 export class MovieModule {}

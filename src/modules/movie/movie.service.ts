@@ -101,14 +101,12 @@ export class MovieService {
   async getMoviesByTitle(title: string): Promise<MovieResponseDto[]> {
     try {
       const movies = await this.movieRepository.find({ title });
-      
-      const movieRes = movies.map(movie => {
-        return MovieResponseDto.plainToClass(movie)
-      })
 
-      return movieRes
-    } catch (error) {
-      
-    }
+      const movieRes = movies.map((movie) => {
+        return MovieResponseDto.plainToClass(movie);
+      });
+
+      return movieRes;
+    } catch (error) {}
   }
 }

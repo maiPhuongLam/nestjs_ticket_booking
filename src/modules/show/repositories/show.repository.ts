@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Show } from '@prisma/client';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { ICreateShowBody, IShowRepository, IShowData, IShowFilter } from '../interfaces';
+import {
+  ICreateShowBody,
+  IShowRepository,
+  IShowData,
+  IShowFilter,
+  IShowDetails,
+} from '../interfaces';
 
 @Injectable()
 export class ShowRepository implements IShowRepository {
@@ -11,33 +17,89 @@ export class ShowRepository implements IShowRepository {
     return this.prismaService.show;
   }
 
-  async create(data: ICreateShowBody): Promise<IShowData> {
+  private get showDetails() {
+    return {
+      cinemaHall: {
+        select: {
+          id: true,
+          name: true,
+          rows: {
+            select: {
+              id: true,
+              seats: {
+                select: {
+                  id: true,
+                  seatRow: true,
+                  seatCol: true,
+                },
+              },
+            },
+          },
+          cinema: {
+            select: {
+              id: true,
+              name: true,
+              address: {
+                select: {
+                  id: true,
+                  streetAddress: true,
+                  state: true,
+                  zipcode: true,
+                  country: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      showSeats: {
+        select: {
+          id: true,
+          seatNumber: true,
+          isReserved: true,
+          price: true,
+          bookingId: true,
+        },
+      },
+      movie: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          durationMin: true,
+          language: true,
+          thumbnailPublicId: true,
+          thumbnailUrl: true,
+          releaseDate: true,
+          country: true,
+          genre: true,
+        },
+      },
+    };
+  }
+
+  async create(data: ICreateShowBody): Promise<IShowDetails> {
     return await this.repository.create({
       data,
-      include: {
-        cinemaHall: { select: { rows: { include: { seats: true } } } },
-      },
+      include: this.showDetails,
     });
   }
 
-  async findById(id: number): Promise<any> {
+  async findById(id: number): Promise<IShowDetails | null> {
     return await this.repository.findUnique({
       where: { id },
-      include: {
-        cinemaHall: { select: { rows: { include: { seats: true } } } },
-        showSeats: true,
-      },
+      include: this.showDetails,
     });
   }
 
-  async update(id: number, data: Partial<ICreateShowBody>) {
+  async update(
+    id: number,
+    data: Partial<ICreateShowBody>,
+  ): Promise<IShowDetails> {
     return await this.repository.update({
       where: { id },
       data,
-      include: {
-        cinemaHall: { select: { rows: { include: { seats: true } } } },
-        showSeats: true,
-      },
+      include: this.showDetails,
     });
   }
 
@@ -51,26 +113,33 @@ export class ShowRepository implements IShowRepository {
     return await this.repository.findMany({ where: { movieId: movieId } });
   }
 
-  async find(filter: IShowFilter): Promise<any[]> {
-    const { movieTitle, ...showFilter } = filter
-    return await this.repository.findMany({ 
-      where: { 
+  async find(filter: IShowFilter): Promise<Show[]> {
+    const { movieTitle, ...showFilter } = filter;
+
+    const queryOptions = {
+      where: {
         movie: {
-          title: filter.movieTitle
+          title: movieTitle,
         },
-        ...showFilter
+        ...showFilter,
       },
-      select: { 
-      movie: {
-        select: { id: true, title: true, genre: true, description: true, country: true, language: true, releaseDate: true, thumbnailUrl: true, durationMin: true }
-      }, 
-      cinemaHall: {
-        select: { id: true, name: true },
-        include: { cinema: { select: { id: true, name: true, address: true}}}
-      }
-    }, 
-    orderBy: filter.orderBy,
-    take: filter.limit || 8,
-    skip: (filter.limit || 8) * (+filter.page - 1), })
+      include: {
+        cinemaHall: {
+          include: {
+            cinema: {
+              include: {
+                address: true,
+              },
+            },
+          },
+        },
+        movie: true,
+      },
+      orderBy: filter.orderBy,
+      take: filter.limit || 8,
+      skip: (filter.limit || 8) * (+(filter.page || 1) - 1),
+    };
+
+    return await this.repository.findMany(queryOptions);
   }
 }

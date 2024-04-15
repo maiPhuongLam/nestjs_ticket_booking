@@ -28,14 +28,14 @@ export class MovieRepository implements IMovieRepository {
     return this.repository.findUnique({ where: { id } });
   }
 
-  find(filter: IMovieFilter,): Promise<Movie[]> {
-    const { orderBy, title, ...movieFilter} = filter
+  find(filter: IMovieFilter): Promise<Movie[]> {
+    const { orderBy, title, ...movieFilter } = filter;
     return this.repository.findMany({
       where: {
         ...movieFilter,
         title: {
-          contains: title
-        }, 
+          contains: title,
+        },
       },
       orderBy: orderBy,
       select: {

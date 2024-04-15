@@ -19,9 +19,7 @@ export class RowRepository implements IRowRepository {
   async countRowByHallId(hallId: number) {
     return await this.repository.count({ where: { cinemaHallId: hallId } });
   }
-  getRowsOfHall(
-    hallId: number,
-  ): Promise<
+  getRowsOfHall(hallId: number): Promise<
     {
       id: number;
       rowNum: number;
