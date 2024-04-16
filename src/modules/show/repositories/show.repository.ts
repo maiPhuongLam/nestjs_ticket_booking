@@ -104,8 +104,8 @@ export class ShowRepository implements IShowRepository {
   }
 
   async find(filter: IShowFilter): Promise<Show[]> {
-    const { movieTitle, ...showFilter } = filter;
-
+    const { movieTitle, orderBy, ...showFilter } = filter;
+    
     const queryOptions = {
       where: {
         movie: {
@@ -125,7 +125,7 @@ export class ShowRepository implements IShowRepository {
         },
         movie: true,
       },
-      orderBy: filter.orderBy,
+      orderBy,
       take: filter.limit || 8,
       skip: (filter.limit || 8) * (+(filter.page || 1) - 1),
     };

@@ -30,14 +30,14 @@ export class MovieController {
     return await this.movieService.createMovie(userId, createMovieDto);
   }
 
-  @Get()
-  async getMovie(@Param('id') id: number) {
-    return await this.movieService.getMovie(id);
+  @Get(':id')
+  async getMovie(@Param('id') id: string) {
+    return await this.movieService.getMovie(+id);
   }
 
   @Patch(':id/thumbnail')
   async uploadMovieThumnail(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -47,6 +47,6 @@ export class MovieController {
     )
     file: Express.Multer.File,
   ) {
-    return await this.movieService.uploadMovieThumnail(id, file);
+    return await this.movieService.uploadMovieThumnail(+id, file);
   }
 }

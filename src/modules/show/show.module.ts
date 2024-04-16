@@ -10,5 +10,6 @@ import { ShowSeatRepository } from './repositories';
   imports: [PrismaModule, UserModule, ],
   controllers: [ShowController],
   providers: [ShowService, ShowRepository, ShowSeatRepository],
+  exports: [ShowService]
 })
 export class ShowModule {}

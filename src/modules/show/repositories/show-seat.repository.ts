@@ -10,6 +10,10 @@ export class ShowSeatRepository implements IShowSeatRepository {
     return this.prismaService.showSeat;
   }
 
+  async findById(id: number) {
+    return await this.repository.findUnique({ where: { id } });
+  }
+
   async create(data: ICreateShowSeatBody) {
     return await this.repository.create({ data });
   }

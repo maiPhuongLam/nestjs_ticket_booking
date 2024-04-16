@@ -168,10 +168,10 @@ CREATE TABLE `Booking` (
     `status` ENUM('REQUESTED', 'PENDING', 'CONFIRMED', 'CHECKED_IN', 'CANCELED') NOT NULL,
     `customerId` INTEGER NULL,
     `showId` INTEGER NOT NULL,
+    `price` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Booking_customerId_key`(`customerId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

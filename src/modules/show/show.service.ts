@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException, flatten } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateShowDto, ShowFilterDto, ShowResponseDto } from './dto';
 import { ShowRepository } from './repositories/show.repository';
 import { UserService } from '../user/user.service';
 import { UserRoles } from '../user/enums';
 import { ShowSeatRepository } from './repositories';
-import { CinemaService } from '../cinema/cinema.service';
-import { MovieService } from '../movie/movie.service';
+import { ShowSeat } from '@prisma/client';
 
 @Injectable()
 export class ShowService {
@@ -15,14 +14,27 @@ export class ShowService {
     private userService: UserService,
   ) {}
 
-  async getShow(id: number): Promise<any> {
+  async getSeat(id: number) {
+    try {
+      const seat = await this.showSeatRepository.findById(id)
+       if (!seat) {
+        throw new NotFoundException('Seat not found')
+       }
+
+       return seat
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async getShow(id: number): Promise<ShowResponseDto> {
     try {
       const show = await this.showRepository.findById(id);
 
       if (!show) {
         throw new NotFoundException();
       }
-      return show
+      return ShowResponseDto.plainToClass(show)
     } catch (error) {
       throw error;
     }
@@ -32,14 +44,14 @@ export class ShowService {
     try {
       let orderBy: Record<string, string>;
       switch (filter.orderBy) {
-        case 'ascName':
-          orderBy = { name: 'asc' };
+        case 'ascStartTime':
+          orderBy = { startTime: 'asc' };
           break;
-        case 'descName':
-          orderBy = { name: 'desc' };
+        case 'descStartTime':
+          orderBy = { startTime: 'desc' };
           break;
         default:
-          orderBy = { name: 'asc' };
+          orderBy = { startTime: 'asc' };
           break;
       }
       const shows = await this.showRepository.find({ ...filter, orderBy });
@@ -68,6 +80,8 @@ export class ShowService {
       });
       const rows = show.cinemaHall.rows;
       for (const row of rows) {
+        console.log(row);
+        
         for (const seat of row.seats) {
           await this.showSeatRepository.create({
             cinemaHallSeatId: seat.id,
@@ -84,12 +98,29 @@ export class ShowService {
     }
   }
 
-  async updateShow(showId: number, updateShowDto: Partial<CreateShowDto>) {
+  async updateShow(showId: number, updateShowDto: Partial<CreateShowDto>): Promise<ShowResponseDto> {
     try {
-      const show = await this.getShow(showId);
-      return await this.showRepository.update(showId, updateShowDto);
+      await this.getShow(showId);
+      const show =  await this.showRepository.update(showId, updateShowDto);
+      return ShowResponseDto.plainToClass(show)
     } catch (error) {
       throw error;
     }
   }
-}
+
+  async updateShowSeat(showSeatId: number, updateShowSeatDto: Record<string, any>): Promise<ShowSeat> {
+    try {
+      const seat = await this.showSeatRepository.findById(showSeatId) 
+
+      if (!seat) {
+        throw new NotFoundException('Seat not found')
+      }
+
+      return await this.showSeatRepository.update(seat.id, updateShowSeatDto)
+    } catch (error) {
+      throw error
+    }
+  }
+
+ 
+} 

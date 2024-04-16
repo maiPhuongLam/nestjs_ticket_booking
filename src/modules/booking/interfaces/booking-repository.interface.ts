@@ -3,4 +3,5 @@ import { ICreateBookingBody } from './create-booking.interface';
 
 export interface IBookingRepository {
   create(data: ICreateBookingBody): Promise<Booking>;
+  createWithTransaction(data: ICreateBookingBody): Promise<Booking>
 }

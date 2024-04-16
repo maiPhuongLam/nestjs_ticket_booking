@@ -1,4 +1,4 @@
-import { BookingStatus } from '@prisma/client';
+import { BookingStatus, ShowSeat } from '@prisma/client';
 
 export interface ICreateBookingBody {
   bookingNo: string;
@@ -6,4 +6,5 @@ export interface ICreateBookingBody {
   status: BookingStatus;
   customerId: number;
   showId: number;
+  price: number
 }

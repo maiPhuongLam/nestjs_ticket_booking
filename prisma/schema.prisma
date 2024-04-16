@@ -210,13 +210,14 @@ model Booking {
   bookingNo               String
   numberOfSeats           Int
   status                  BookingStatus
-  customerId              Int?                       @unique
+  customerId              Int?                       
   customer                Customer?                  @relation(fields: [customerId], references: [id])
   bookingFrontDeskOfficer Booking_FrontDeskOfficer[]
   notifications           Notification[]
   showId                  Int
   show                    Show                       @relation(fields: [showId], references: [id])
   showSeats               ShowSeat[]
+  price                   Int
   payment                 Payment?
   createdAt               DateTime                   @default(now())
   updatedAt               DateTime                   @updatedAt

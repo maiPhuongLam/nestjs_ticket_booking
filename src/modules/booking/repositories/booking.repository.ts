@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { Booking, Prisma, PrismaClient } from '@prisma/client';
-import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { IBookingRepository, ICreateBookingBody } from '../interfaces';
+import { Booking } from "@prisma/client";
+import { IBookingRepository, ICreateBookingBody } from "../interfaces";
+import { PrismaService } from "src/modules/prisma/prisma.service";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class BookingRepository implements IBookingRepository {
@@ -13,5 +13,15 @@ export class BookingRepository implements IBookingRepository {
 
   async create(data: ICreateBookingBody): Promise<Booking> {
     return await this.repository.create({ data });
+  }
+
+  async createWithTransaction(data: ICreateBookingBody): Promise<Booking> {
+    return this.prismaService.$transaction(async (prisma) => {
+      const booking = await prisma.booking.create({ data });
+      return booking;
+    }).catch((error) => {
+      console.error('Transaction failed:', error);
+      throw error;
+    });
   }
 }

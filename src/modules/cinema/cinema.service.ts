@@ -139,11 +139,13 @@ export class CinemaService {
           totalSeats: numSeatsPerRow[i],
         });
         for (let j = 0; j < row.totalSeats; j++) {
+          console.log(row);
+          
           await this.seatRepository.create({
             rowId: row.id,
             type: SeatType.REGULAR,
             seatRow: row.rowNum,
-            seatCol: i + 1,
+            seatCol: j + 1,
           });
         }
       }

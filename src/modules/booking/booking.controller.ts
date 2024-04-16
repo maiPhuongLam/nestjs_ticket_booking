@@ -11,15 +11,13 @@ export class BookingController {
 
   @UseGuards(RolesGuard)
   @Roles([UserRoles.CUSTOMER])
-  @Post(':id')
+  @Post()
   async createBooking(
     @CurrentUserId() userId: number,
-    @Param('showId') showId: number,
     @Body() createBookingDto: CreateBookingDto,
   ) {
     return await this.bookingService.createBooking(
       userId,
-      showId,
       createBookingDto,
     );
   }

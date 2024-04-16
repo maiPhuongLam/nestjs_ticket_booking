@@ -35,7 +35,7 @@ export class CinemaController {
     return await this.cinemaService.getCinema(+id);
   }
 
-  @Get(':id')
+  @Get()
   async getAllCinema() {
     return await this.cinemaService.getAllCinemas();
   }

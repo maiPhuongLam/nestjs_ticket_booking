@@ -42,6 +42,8 @@ export class AuthService {
 
   async loginLocal(loginDto: LoginDto): Promise<Token> {
     try {
+      console.log(loginDto);
+      
       const { email, password } = loginDto;
 
       const user = await this.userService.findUserExist(email);
