@@ -24,4 +24,12 @@ export class BookingRepository implements IBookingRepository {
       throw error;
     });
   }
+
+  async findById(id): Promise<Booking> {
+    return await this.repository.findUnique({ where: { id } })
+  }
+
+  async find(): Promise<Booking[]> {
+    return await this.repository.findMany()
+  }
 }

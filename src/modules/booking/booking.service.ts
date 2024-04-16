@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { BookingRepository } from './repositories/booking.repository';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UserService } from '../user/user.service';
@@ -21,11 +21,8 @@ export class BookingService {
   ) {
     try {
       const { showId, seats } = createBookingDto
-      
       const seatPromises = seats.map(seatId => this.showService.getSeat(seatId));
-      const showSeats = await Promise.all(seatPromises);
-      console.log(showSeats);
-  
+      const showSeats = await Promise.all(seatPromises);  
       await this.showService.getShow(showId);
   
       for (const seat of showSeats) {
@@ -33,6 +30,7 @@ export class BookingService {
           throw new ForbiddenException('Seat has been already reserved');
         }
       }
+      
       const customerId = await this.userService.getIdOfUserRole(userId, UserRoles.CUSTOMER);
       const bookingNo = uuidv4().split('-')[1] + (new Date()).getTime();
       const price = showSeats.reduce((accumulator, currentValue) => accumulator + currentValue.price, 0);
@@ -54,6 +52,20 @@ export class BookingService {
       
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getBooking(id: number) {
+    try {
+      const booking = await this.bookingRepository.findById(id)
+
+      if (!booking) {
+        throw new NotFoundException('Booking not found')
+      }
+
+      return booking
+    } catch (error) {
+      throw error
     }
   }
   

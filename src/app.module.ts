@@ -13,6 +13,7 @@ import { MovieModule } from './modules/movie/movie.module';
 import { ShowModule } from './modules/show/show.module';
 import { CinemaModule } from './modules/cinema/cinema.module';
 import { BookingModule } from './modules/booking/booking.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { BookingModule } from './modules/booking/booking.module';
     ShowModule,
     CinemaModule,
     BookingModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

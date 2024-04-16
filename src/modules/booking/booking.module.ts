@@ -10,5 +10,6 @@ import { ShowModule } from '../show/show.module';
   imports: [PrismaModule, UserModule, ShowModule],
   controllers: [BookingController],
   providers: [BookingService, BookingRepository],
+  exports: [BookingService]
 })
 export class BookingModule {}
